@@ -1,4 +1,4 @@
-using System.Data.SqlClient;
+using System.Data.SqlClient; // This library has been added for SQL operations.
 
 namespace LoginDemo
 
@@ -6,32 +6,10 @@ namespace LoginDemo
     public partial class Form1 : Form
     {
         SqlConnection conn = new SqlConnection("server=.; Initial Catalog=logindemodb;Integrated Security=SSPI");
-        SqlCommand cmd;
+        // SqlConnection object is created and connection information defined for SQL connection.   
+        SqlCommand? cmd;
+        // SQLCommand object was then created to write SQL commands.
         public Point mouseLocation;
-        public Form1()
-        {
-            InitializeComponent();
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            headerLbl.Visible = true;
-            signinBtn.Visible = false;
-            signupBtn.Visible = false;
-            usernameLbl.Visible = false;
-            passwordLbl.Visible = false;
-            rePasswordLbl.Visible = false;
-            usernameField.Visible = false;
-            passwordField.Visible = false;
-            rePasswordField.Visible = false;
-            connection_status.Visible = false;
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         private void panel1_MouseDown(object sender, MouseEventArgs e)
         {
             mouseLocation = new Point(-e.X, -e.Y);
@@ -46,32 +24,68 @@ namespace LoginDemo
                 Location = mousePose;
             }
         }
-
-        bool passwordControl()
+        public Form1()
         {
-            if (passwordField.Text == rePasswordField.Text) { return true; }
-            return false;
+            InitializeComponent();
+        }
+        // Events to take place when the program is started.
+        // The same events occur when loginLbl and registerLbl are clicked.
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            headerLbl.Visible = true;
+            signinBtn.Visible = false;
+            signupBtn.Visible = false;
+            usernameLbl.Visible = false;
+            passwordLbl.Visible = false;
+            rePasswordLbl.Visible = false;
+            usernameField.Visible = false;
+            passwordField.Visible = false;
+            rePasswordField.Visible = false;
+            connection_status.Visible = false;
         }
 
-        bool usernameControl()
+        // When loginLbl is clicked, the login components are activated. 
+        private void loginLbl_Click(object sender, EventArgs e)
         {
-            string usernameTemp = null;
-            cmd = new SqlCommand();
-            conn.Open();
-            cmd.Connection = conn;
-            cmd.CommandText = "SELECT username FROM account WHERE username = @username";
-            cmd.Parameters.AddWithValue("@username", usernameField.Text);
-            SqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read())
-            {
-                usernameTemp = reader.GetValue(0).ToString();
-            }
-            conn.Close();
-
-            if (usernameTemp == usernameField.Text) { return false; }
-            return true;
+            loginLbl.Text = "> Login";
+            registerLbl.Text = "Register";
+            signupBtn.Visible = false;
+            rePasswordField.Visible = false;
+            rePasswordLbl.Visible = false;
+            headerLbl.Visible = false;
+            signinBtn.Visible = true;
+            usernameLbl.Visible = true;
+            passwordLbl.Visible = true;
+            usernameField.Visible = true;
+            passwordField.Visible = true;
+            connection_status.Visible = true;
         }
 
+        // When registerLbl is clicked, the register components are activated.
+        private void registerLbl_Click(object sender, EventArgs e)
+        {
+            registerLbl.Text = "> Register";
+            loginLbl.Text = "Login";
+            signinBtn.Visible = false;
+            headerLbl.Visible = false;
+            rePasswordField.Visible = true;
+            rePasswordLbl.Visible = true;
+            signupBtn.Visible = true;
+            usernameLbl.Visible = true;
+            passwordLbl.Visible = true;
+            usernameField.Visible = true;
+            passwordField.Visible = true;
+            connection_status.Visible = true;
+        }
+
+        // When pictureBox1 clicked closing form application.
+        // If you want close the application, click to red x icon.
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        // When signupBtn is clicked the user is saved in the database.
         private void signupBtn_Click(object sender, EventArgs e)
         {
 
@@ -94,38 +108,34 @@ namespace LoginDemo
             }
         }
 
-        private void loginLbl_Click(object sender, EventArgs e)
+        // If both password field text equals return true.
+        bool passwordControl()
         {
-            loginLbl.Text = "> Login";
-            registerLbl.Text = "Register";
-            signupBtn.Visible = false;
-            rePasswordField.Visible = false;
-            rePasswordLbl.Visible = false;
-            headerLbl.Visible = false;
-            signinBtn.Visible = true;
-            usernameLbl.Visible = true;
-            passwordLbl.Visible = true;
-            usernameField.Visible = true;
-            passwordField.Visible = true;
-            connection_status.Visible = true;
+            if (passwordField.Text == rePasswordField.Text) { return true; }
+            return false;
         }
 
-        private void registerLbl_Click(object sender, EventArgs e)
+        // If username field text and username registered in the database equals return false, if else return true. 
+        bool usernameControl()
         {
-            registerLbl.Text = "> Register";
-            loginLbl.Text = "Login";
-            signinBtn.Visible = false;
-            headerLbl.Visible = false;
-            rePasswordField.Visible = true;
-            rePasswordLbl.Visible = true;
-            signupBtn.Visible = true;
-            usernameLbl.Visible = true;
-            passwordLbl.Visible = true;
-            usernameField.Visible = true;
-            passwordField.Visible = true;
-            connection_status.Visible = true;
+            string? usernameTemp = null;
+            cmd = new SqlCommand();
+            conn.Open();
+            cmd.Connection = conn;
+            cmd.CommandText = "SELECT username FROM account WHERE username = @username";
+            cmd.Parameters.AddWithValue("@username", usernameField.Text);
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                usernameTemp = reader.GetValue(0).ToString();
+            }
+            conn.Close();
+
+            if (usernameTemp == usernameField.Text) { return false; }
+            return true;
         }
 
+        // When the user wants to login to the system, clicks on signinBtn and the user information is checked from the database.
         private void signinBtn_Click(object sender, EventArgs e)
         {
             if (usernameField.Text.Length != 0 && passwordField.Text.Length != 0)
